@@ -14,22 +14,12 @@ python -m http.server 4173
 
 ## 发布到 GitHub Pages
 
-1. 使用当前仓库 `leoleolanber/108140-blog`，或新建一个仓库。
+1. 使用当前仓库，或新建一个仓库。
 2. 把本目录推到仓库的 `main` 分支。
 3. 在仓库的 Settings -> Pages 里选择 GitHub Actions 作为发布方式。
 4. 在 Settings -> Pages -> Custom domain 中填写 `blog.66zhang.cn` 并保存。
 5. 等待 `Deploy static blog` 工作流完成。
-6. GitHub Actions 发布主要依赖 Pages 设置里的 Custom domain。仓库根目录里的 `CNAME` 文件已保留 `blog.66zhang.cn`，方便以后改成分支发布或同步记录。
-
-## 域名 DNS
-
-`blog.66zhang.cn` 是子域名，DNS 里添加一条 CNAME：
-
-```text
-blog -> leoleolanber.github.io
-```
-
-如果 DNS 面板要求填写完整主机名，就填 `blog.66zhang.cn`；记录值填 `leoleolanber.github.io`。
+6. GitHub Actions 发布主要依赖 Pages 设置里的 Custom domain。仓库根目录里的 `CNAME` 文件已保留，方便以后改成分支发布或同步记录。
 
 ## 后续编辑
 
