@@ -1,6 +1,6 @@
 # blog.66zhang.cn Blog
 
-这是一个为 `blog.66zhang.cn` 准备的信息技术博客。页面结构面向技术内容分享：首屏、文章流、搜索、标签筛选、专题侧栏、归档、RSS、站点地图和 404 页面。
+这是一个为 `blog.66zhang.cn` 准备的信息技术博客。它不是手写 HTML 页面，而是一个轻量静态博客系统：Markdown 文章放在 `content/posts/`，构建脚本自动生成 HTML、RSS、站点地图、搜索索引、文章目录、标签、专题和归档。
 
 ## 本地预览
 
@@ -42,6 +42,25 @@ $$
 
 可以参考 `content/posts/markdown-latex-example.md`。
 
+## 写作后台
+
+推荐用本地写作后台来写文章：
+
+```powershell
+npm install
+npm run write
+```
+
+然后打开：
+
+```text
+http://localhost:4310/admin/
+```
+
+在页面里写 Markdown + LaTeX。点“保存”会写入 `content/posts/*.md`；点“生成 HTML”会生成 `_site/`；点“发布到 GitHub”会自动保存、生成、提交并推送，GitHub Pages 随后自动部署。
+
+本地后台地址只在你的电脑上运行，不会作为公开页面部署到 GitHub Pages。
+
 ## 发布到 GitHub Pages
 
 1. 使用当前仓库，或新建一个仓库。
@@ -54,7 +73,9 @@ $$
 ## 后续编辑
 
 - Markdown 文章在 `content/posts/`
+- 本地写作后台在 `admin/`
 - 生成脚本在 `scripts/build.js`
+- 写作后台服务在 `scripts/editor-server.js`
 - 样式在 `assets/styles.css`
 - 搜索和标签筛选在 `assets/app.js`
 - 自定义域名在 `CNAME`

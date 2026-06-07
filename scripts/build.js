@@ -11,11 +11,11 @@ const site = {
   title: "blog.66zhang.cn",
   subtitle: "信息技术博客",
   url: "https://blog.66zhang.cn",
-  description: "分享信息技术、网络、Linux、云服务、开发工具和 AI 应用的技术博客。",
-  ogDescription: "面向信息技术实践，记录网络、系统、云服务、工具链和 AI 自动化。",
-  heroCopy: "面向信息技术实践，记录网络、Linux、云服务、开发工具、AI 自动化和日常运维中的可复用经验。",
-  topics: ["Network", "Linux", "Cloud", "Security", "AI"],
-  stack: ["Markdown", "LaTeX", "GitHub Actions", "MathJax"],
+  description: "分享网络、Linux、云服务、开发工具、安全排障和 AI 应用的技术博客。",
+  author: "66zhang",
+  heroCopy: "把信息技术里的命令、配置、故障、部署和思考整理成可检索、可复用、可长期维护的技术文章。",
+  topics: ["网络", "Linux", "云服务", "安全", "AI", "工具链"],
+  stack: ["Markdown", "LaTeX", "MathJax", "GitHub Actions"],
   focus: [
     "网络协议、DNS、CDN 与访问质量",
     "Linux、Web 服务和云主机运维",
@@ -30,6 +30,36 @@ const md = new MarkdownIt({
   typographer: true
 });
 
+function textFromInline(token) {
+  if (!token?.children) return token?.content || "";
+  return token.children.map((child) => child.content || "").join("");
+}
+
+function slugifyHeading(value) {
+  const slug = String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug || "section";
+}
+
+function uniqueHeadingId(env, title) {
+  const base = slugifyHeading(title);
+  env.headingIds = env.headingIds || new Map();
+  const count = env.headingIds.get(base) || 0;
+  env.headingIds.set(base, count + 1);
+  return count ? `${base}-${count + 1}` : base;
+}
+
+md.renderer.rules.heading_open = (tokens, index, options, env, self) => {
+  const title = textFromInline(tokens[index + 1]);
+  if (title) tokens[index].attrSet("id", uniqueHeadingId(env, title));
+  return self.renderToken(tokens, index, options);
+};
+
 function cleanDir(dir) {
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
@@ -39,6 +69,7 @@ function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
   for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
     if (entry.name.startsWith("ChatGPT Image")) continue;
+    if (/^hero \(.+\)\./.test(entry.name)) continue;
     const src = path.join(from, entry.name);
     const dest = path.join(to, entry.name);
     if (entry.isDirectory()) copyDir(src, dest);
@@ -84,6 +115,16 @@ function slugFromFile(file) {
   return path.basename(file, ".md");
 }
 
+function stripMarkdown(source) {
+  return String(source || "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    .replace(/\[[^\]]+\]\([^)]+\)/g, "$1")
+    .replace(/[#>*_`~$|]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function protectMath(source) {
   const math = [];
   const stash = (match) => {
@@ -106,17 +147,35 @@ function protectMath(source) {
 }
 
 function renderMarkdown(source) {
-  const protectedMath = protectMath(source);
-  return protectedMath.restore(md.render(protectedMath.source));
+  const protectedMath = protectMath(String(source || ""));
+  return protectedMath.restore(md.render(protectedMath.source, {}));
 }
 
 function normalizeTags(tags) {
   if (!tags) return [];
-  if (Array.isArray(tags)) return tags.map(String);
+  if (Array.isArray(tags)) return tags.map(String).map((tag) => tag.trim()).filter(Boolean);
   return String(tags).split(",").map((tag) => tag.trim()).filter(Boolean);
 }
 
+function extractHeadings(source) {
+  const env = { headingIds: new Map() };
+  return String(source || "")
+    .split(/\r?\n/)
+    .map((line) => {
+      const match = /^(#{2,3})\s+(.+?)\s*#*$/.exec(line);
+      if (!match) return null;
+      const text = match[2].replace(/[`*_~]/g, "").trim();
+      return {
+        level: match[1].length,
+        text,
+        id: uniqueHeadingId(env, text)
+      };
+    })
+    .filter(Boolean);
+}
+
 function readPosts() {
+  if (!fs.existsSync(contentDir)) fs.mkdirSync(contentDir, { recursive: true });
   return fs.readdirSync(contentDir)
     .filter((file) => file.endsWith(".md"))
     .map((file) => {
@@ -128,21 +187,24 @@ function readPosts() {
       }
 
       const slug = parsed.data.slug || slugFromFile(file);
-      const html = renderMarkdown(parsed.content);
+      const content = parsed.content.trim();
       const tags = normalizeTags(parsed.data.tags);
+      const summary = parsed.data.summary || stripMarkdown(content).slice(0, 120);
 
       return {
         slug,
         title: parsed.data.title || slug,
-        summary: parsed.data.summary || parsed.content.split(/\n\n/)[0].replace(/[#*_`>$]/g, "").trim(),
+        summary,
         date,
         dateText: formatDate(date),
-        readingTime: parsed.data.readingTime || readingTime(parsed.content),
+        readingTime: parsed.data.readingTime || readingTime(content),
         tags,
         featured: Boolean(parsed.data.featured),
         image: parsed.data.image || "assets/hero.png",
-        imageAlt: parsed.data.imageAlt || "技术博客配图",
-        html
+        imageAlt: parsed.data.imageAlt || "信息技术博客背景图",
+        body: content,
+        html: renderMarkdown(content),
+        headings: extractHeadings(content)
       };
     })
     .sort((a, b) => b.date - a.date);
@@ -163,7 +225,7 @@ function pageHead({ title, description, canonical, image = `${site.url}/assets/h
     <meta property="og:image" content="${escapeHtml(image)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
     <link rel="stylesheet" href="${cssPath}" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23173d35'/%3E%3Cpath d='M16 42V22h8v20zm12 0V22h8v20zm12 0V22h8v20z' fill='%23f6ead7'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2316221f'/%3E%3Cpath d='M15 44V20h8v24zm13 0V20h8v24zm13 0V20h8v24z' fill='%23e9f7ef'/%3E%3C/svg%3E" />
 ${math ? `    <script>
       window.MathJax = {
         tex: {
@@ -187,7 +249,7 @@ function header(prefix = "") {
       </a>
       <nav class="site-nav" aria-label="主导航">
         <a href="${prefix}index.html#latest">文章</a>
-        <a href="${prefix}index.html#notes">专题</a>
+        <a href="${prefix}index.html#topics">专题</a>
         <a href="${prefix}index.html#archive">归档</a>
         <a href="${prefix}feed.xml">RSS</a>
       </nav>
@@ -195,14 +257,14 @@ function header(prefix = "") {
 }
 
 function tagList(tags) {
-  return tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("\n                ");
+  return tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
 }
 
-function postCard(post, featured = false) {
+function postCard(post, { featured = false } = {}) {
   const href = `posts/${post.slug}.html`;
   if (featured) {
-    return `<article class="featured-post post-card" data-tags="${escapeHtml(post.tags.join(" "))}" data-title="${escapeHtml(post.title)}">
-            <a href="${href}" class="post-image">
+    return `<article class="post-card featured-post" data-tags="${escapeHtml(post.tags.join(" "))}" data-title="${escapeHtml(post.title)}">
+            <a class="post-image" href="${href}">
               <img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.imageAlt)}" />
             </a>
             <div class="post-body">
@@ -213,41 +275,57 @@ function postCard(post, featured = false) {
               </div>
               <h3><a href="${href}">${escapeHtml(post.title)}</a></h3>
               <p>${escapeHtml(post.summary)}</p>
-              <div class="tag-list" aria-label="标签">
-                ${tagList(post.tags)}
-              </div>
+              <div class="tag-list" aria-label="标签">${tagList(post.tags)}</div>
             </div>
           </article>`;
   }
 
-  return `<article class="post-card compact" data-tags="${escapeHtml(post.tags.join(" "))}" data-title="${escapeHtml(post.title)}">
+  return `<article class="post-card list-post" data-tags="${escapeHtml(post.tags.join(" "))}" data-title="${escapeHtml(post.title)}">
+              <div class="post-date-block">
+                <strong>${String(post.date.getDate()).padStart(2, "0")}</strong>
+                <span>${post.date.getFullYear()}.${String(post.date.getMonth() + 1).padStart(2, "0")}</span>
+              </div>
               <div class="post-body">
                 <div class="post-meta">
-                  <time datetime="${post.date.toISOString().slice(0, 10)}">${post.dateText}</time>
                   <span>${escapeHtml(post.readingTime)}</span>
+                  <span>${escapeHtml(post.tags.slice(0, 2).join(" / "))}</span>
                 </div>
                 <h3><a href="${href}">${escapeHtml(post.title)}</a></h3>
                 <p>${escapeHtml(post.summary)}</p>
-                <div class="tag-list">
-                  ${tagList(post.tags)}
-                </div>
+                <div class="tag-list">${tagList(post.tags)}</div>
               </div>
             </article>`;
 }
 
+function renderTopicBlocks(tagCounts, posts) {
+  return tagCounts.map(({ tag, count }) => {
+    const related = posts.filter((post) => post.tags.includes(tag)).slice(0, 3);
+    return `<article class="topic-card">
+          <div class="topic-card-head">
+            <span>${escapeHtml(tag)}</span>
+            <strong>${count}</strong>
+          </div>
+          <ul>
+            ${related.map((post) => `<li><a href="posts/${post.slug}.html">${escapeHtml(post.title)}</a></li>`).join("")}
+          </ul>
+        </article>`;
+  }).join("");
+}
+
 function renderHome(posts) {
-  const featured = posts.find((post) => post.featured) || posts[0];
-  const rest = posts.filter((post) => post !== featured);
-  const tags = [...new Set(posts.flatMap((post) => post.tags))];
+  const safePosts = posts.length ? posts : [];
+  const featured = safePosts.find((post) => post.featured) || safePosts[0];
+  const rest = safePosts.filter((post) => post !== featured);
+  const tags = [...new Set(safePosts.flatMap((post) => post.tags))];
   const tagCounts = tags
-    .map((tag) => ({ tag, count: posts.filter((post) => post.tags.includes(tag)).length }))
+    .map((tag) => ({ tag, count: safePosts.filter((post) => post.tags.includes(tag)).length }))
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "zh-CN"));
-  const archive = posts.reduce((items, post) => {
+  const archive = safePosts.reduce((items, post) => {
     const label = monthLabel(post.date);
     items.set(label, (items.get(label) || 0) + 1);
     return items;
   }, new Map());
-  const latestPost = posts[0];
+  const latestPost = safePosts[0];
 
   return `${pageHead({
     title: `${site.title} | ${site.subtitle}`,
@@ -263,133 +341,106 @@ function renderHome(posts) {
         <div class="hero-shade"></div>
         <div class="hero-content">
           <div class="hero-main">
-            <p class="eyebrow">Information Technology</p>
+            <p class="eyebrow">Information Technology Notes</p>
             <h1>${site.title}</h1>
             <p class="hero-copy">${site.heroCopy}</p>
             <div class="hero-topics" aria-label="内容方向">
-              ${site.topics.map((topic) => `<span>${topic}</span>`).join("\n              ")}
-            </div>
-            <div class="hero-actions" aria-label="精选入口">
-              <a class="primary-link" href="#latest">阅读技术文章</a>
-              <a class="secondary-link" href="#notes">浏览专题</a>
+              ${site.topics.map((topic) => `<span>${escapeHtml(topic)}</span>`).join("")}
             </div>
           </div>
-          <div class="hero-console" aria-label="站点概览">
-            <div class="console-top">
-              <span></span>
-              <span></span>
-              <span></span>
+          <div class="hero-panel" aria-label="站点概览">
+            <div>
+              <span class="panel-label">Latest</span>
+              <strong>${escapeHtml(latestPost?.title || "准备写第一篇文章")}</strong>
+              <a href="#latest">进入文章流</a>
             </div>
-            <div class="console-line"><span class="console-key">site</span><span>${site.title}</span></div>
-            <div class="console-line"><span class="console-key">posts</span><span>${posts.length}</span></div>
-            <div class="console-line"><span class="console-key">latest</span><span>${escapeHtml(latestPost.title)}</span></div>
-            <div class="console-line"><span class="console-key">write</span><span>Markdown + LaTeX</span></div>
-            <div class="console-stack">
-              ${site.stack.map((item) => `<span>${escapeHtml(item)}</span>`).join("\n              ")}
+            <dl class="site-metrics">
+              <div><dt>文章</dt><dd>${safePosts.length}</dd></div>
+              <div><dt>标签</dt><dd>${tags.length}</dd></div>
+              <div><dt>写作</dt><dd>MD</dd></div>
+            </dl>
+            <div class="pipeline">
+              ${site.stack.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
             </div>
           </div>
         </div>
       </section>
 
-      <div class="page-shell">
-        <section id="latest" class="content-column" aria-labelledby="latest-title">
-          <div class="signal-bar" aria-label="站点摘要">
-            <div class="signal-item">
-              <span class="signal-label">Articles</span>
-              <strong>${posts.length}</strong>
-              <span>技术文章</span>
-            </div>
-            <div class="signal-item">
-              <span class="signal-label">Topics</span>
-              <strong>${tags.length}</strong>
-              <span>可筛选标签</span>
-            </div>
-            <div class="signal-item">
-              <span class="signal-label">Latest</span>
-              <strong>${latestPost.dateText}</strong>
-              <span>${escapeHtml(latestPost.title)}</span>
-            </div>
-          </div>
-
+      <div class="blog-shell">
+        <section id="latest" class="feed-column" aria-labelledby="latest-title">
           <div class="section-head">
             <div>
-              <p class="section-kicker">Latest</p>
+              <p class="section-kicker">Latest Posts</p>
               <h2 id="latest-title">技术文章</h2>
             </div>
             <label class="search-box">
-              <span>搜索</span>
-              <input id="post-search" type="search" placeholder="网络、Linux、AI、部署" />
+              <span>搜索文章</span>
+              <input id="post-search" type="search" placeholder="DNS、Linux、AI、部署" />
             </label>
           </div>
 
           <div class="filter-row" aria-label="文章筛选">
             <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true">全部</button>
-            ${tags.map((tag) => `<button class="filter-button" type="button" data-filter="${escapeHtml(tag)}" aria-pressed="false">${escapeHtml(tag)}</button>`).join("\n            ")}
+            ${tags.map((tag) => `<button class="filter-button" type="button" data-filter="${escapeHtml(tag)}" aria-pressed="false">${escapeHtml(tag)}</button>`).join("")}
           </div>
 
-          ${postCard(featured, true)}
+          ${featured ? postCard(featured, { featured: true }) : ""}
 
           <div class="post-list">
-            ${rest.map((post) => postCard(post)).join("\n")}
+            ${rest.map((post) => postCard(post)).join("")}
           </div>
 
           <p id="empty-state" class="empty-state" hidden>没有找到匹配的文章。</p>
         </section>
 
-        <aside class="sidebar" aria-label="侧栏">
-          <section id="about" class="side-panel">
-            <p class="side-kicker">About</p>
-            <h2>关于 66zhang 技术博客</h2>
-            <p>这里主要分享信息技术相关内容：网络基础、Linux 服务、云端部署、安全排障、开发工具和 AI 自动化实践。</p>
+        <aside class="site-sidebar" aria-label="博客侧栏">
+          <section class="side-panel author-panel">
+            <p class="side-kicker">Author</p>
+            <h2>${site.author}</h2>
+            <p>记录信息技术实践：网络、系统、部署、排障、工具链和 AI 自动化。</p>
           </section>
 
           <section class="side-panel">
             <p class="side-kicker">Focus</p>
             <h2>关注方向</h2>
             <ul class="clean-list">
-              ${site.focus.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n              ")}
+              ${site.focus.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
             </ul>
-          </section>
-
-          <section class="side-panel command-panel">
-            <p class="side-kicker">Workflow</p>
-            <h2>写作流程</h2>
-            <div class="command-list" aria-label="Markdown 写作流程">
-              <span>content/posts/*.md</span>
-              <span>npm run build</span>
-              <span>GitHub Actions</span>
-              <span>blog.66zhang.cn</span>
-            </div>
-          </section>
-
-          <section id="notes" class="side-panel">
-            <p class="side-kicker">Topics</p>
-            <h2>专题索引</h2>
-            <ol class="ranked-list">
-              ${posts.slice(0, 5).map((post) => `<li><a href="posts/${post.slug}.html">${escapeHtml(post.title)}</a></li>`).join("\n              ")}
-            </ol>
           </section>
 
           <section class="side-panel">
             <p class="side-kicker">Tags</p>
-            <h2>标签</h2>
-            <div class="topic-matrix">
-              ${tagCounts.map(({ tag, count }) => `<a href="#latest" data-tag-link="${escapeHtml(tag)}"><span>${escapeHtml(tag)}</span><strong>${count}</strong></a>`).join("\n              ")}
+            <h2>标签云</h2>
+            <div class="tag-cloud">
+              ${tagCounts.map(({ tag, count }) => `<a href="#latest" data-tag-link="${escapeHtml(tag)}"><span>${escapeHtml(tag)}</span><strong>${count}</strong></a>`).join("")}
             </div>
           </section>
 
           <section id="archive" class="side-panel">
             <p class="side-kicker">Archive</p>
             <h2>归档</h2>
-            ${[...archive.entries()].map(([label, count]) => `<div class="archive-row"><span>${escapeHtml(label)}</span><strong>${count}</strong></div>`).join("\n            ")}
+            ${[...archive.entries()].map(([label, count]) => `<div class="archive-row"><span>${escapeHtml(label)}</span><strong>${count}</strong></div>`).join("")}
           </section>
         </aside>
       </div>
+
+      <section id="topics" class="topic-section" aria-labelledby="topics-title">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Topics</p>
+            <h2 id="topics-title">专题目录</h2>
+          </div>
+          <a class="rss-link" href="feed.xml">RSS 订阅</a>
+        </div>
+        <div class="topic-grid">
+          ${renderTopicBlocks(tagCounts, safePosts)}
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
       <p>© 2026 ${site.title}</p>
-      <a href="${site.url}/">${site.title}</a>
+      <span>Markdown + LaTeX + GitHub Pages</span>
     </footer>
 
     <script src="assets/app.js"></script>
@@ -397,7 +448,15 @@ function renderHome(posts) {
 </html>`;
 }
 
-function renderArticle(post) {
+function renderToc(post) {
+  if (!post.headings.length) return `<p class="toc-empty">这篇文章没有二级标题。</p>`;
+  return `<ol class="toc-list">
+      ${post.headings.map((heading) => `<li class="level-${heading.level}"><a href="#${escapeHtml(heading.id)}">${escapeHtml(heading.text)}</a></li>`).join("")}
+    </ol>`;
+}
+
+function renderArticle(post, posts) {
+  const related = posts.filter((item) => item.slug !== post.slug && item.tags.some((tag) => post.tags.includes(tag))).slice(0, 3);
   return `${pageHead({
     title: `${post.title} | ${site.title}`,
     description: post.summary,
@@ -408,27 +467,55 @@ function renderArticle(post) {
   <body>
     ${header("../")}
 
-    <main class="article-shell">
-      <article>
-        <header class="article-hero">
-          <img src="../${escapeHtml(post.image)}" alt="${escapeHtml(post.imageAlt)}" />
-          <div class="article-title">
-            <p class="section-kicker">${escapeHtml(post.tags.slice(0, 3).join(" / "))}</p>
-            <h1>${escapeHtml(post.title)}</h1>
-            <div class="post-meta">
-              <time datetime="${post.date.toISOString().slice(0, 10)}">${post.dateText}</time>
-              <span>${escapeHtml(post.readingTime)}</span>
-              <span>${escapeHtml(post.tags.join(" / "))}</span>
-            </div>
+    <main class="article-page">
+      <header class="article-hero">
+        <img src="../${escapeHtml(post.image)}" alt="${escapeHtml(post.imageAlt)}" />
+        <div class="article-hero-shade"></div>
+        <div class="article-title">
+          <p class="section-kicker">${escapeHtml(post.tags.slice(0, 3).join(" / "))}</p>
+          <h1>${escapeHtml(post.title)}</h1>
+          <div class="post-meta">
+            <time datetime="${post.date.toISOString().slice(0, 10)}">${post.dateText}</time>
+            <span>${escapeHtml(post.readingTime)}</span>
+            <span>${escapeHtml(post.tags.join(" / "))}</span>
           </div>
-        </header>
-
-        <div class="prose">
-          ${post.html}
         </div>
-      </article>
+      </header>
 
-      <a class="back-link" href="../index.html#latest">返回首页</a>
+      <div class="article-layout">
+        <article class="article-body prose">
+          ${post.html}
+        </article>
+
+        <aside class="article-aside" aria-label="文章信息">
+          <section class="side-panel toc-panel">
+            <p class="side-kicker">Contents</p>
+            <h2>文章目录</h2>
+            ${renderToc(post)}
+          </section>
+
+          <section class="side-panel">
+            <p class="side-kicker">Tags</p>
+            <h2>相关标签</h2>
+            <div class="tag-cloud small">
+              ${post.tags.map((tag) => `<a href="../index.html#latest"><span>${escapeHtml(tag)}</span></a>`).join("")}
+            </div>
+          </section>
+
+          ${related.length ? `<section class="side-panel">
+            <p class="side-kicker">Related</p>
+            <h2>相关笔记</h2>
+            <ol class="related-list">
+              ${related.map((item) => `<li><a href="${item.slug}.html">${escapeHtml(item.title)}</a></li>`).join("")}
+            </ol>
+          </section>` : ""}
+        </aside>
+      </div>
+
+      <nav class="article-nav" aria-label="文章导航">
+        <a href="../index.html#latest">返回文章列表</a>
+        <a href="../feed.xml">订阅 RSS</a>
+      </nav>
     </main>
   </body>
 </html>`;
@@ -442,8 +529,8 @@ function render404() {
   })}
   <body>
     ${header("")}
-    <main class="article-shell">
-      <section class="prose">
+    <main class="article-page">
+      <section class="not-found prose">
         <p class="section-kicker">404</p>
         <h1>页面不存在</h1>
         <p>这个地址暂时没有内容，可以回到首页继续阅读。</p>
@@ -489,6 +576,18 @@ function renderSitemap(posts) {
 </urlset>`;
 }
 
+function renderSearchIndex(posts) {
+  return JSON.stringify(posts.map((post) => ({
+    title: post.title,
+    slug: post.slug,
+    url: `${site.url}/posts/${post.slug}.html`,
+    date: post.date.toISOString().slice(0, 10),
+    tags: post.tags,
+    summary: post.summary,
+    text: stripMarkdown(post.body).slice(0, 1200)
+  })), null, 2);
+}
+
 function build() {
   const posts = readPosts();
   cleanDir(outDir);
@@ -504,9 +603,18 @@ Sitemap: ${site.url}/sitemap.xml
   writeFile(path.join(outDir, "404.html"), render404());
   writeFile(path.join(outDir, "feed.xml"), renderFeed(posts));
   writeFile(path.join(outDir, "sitemap.xml"), renderSitemap(posts));
+  writeFile(path.join(outDir, "search.json"), renderSearchIndex(posts));
   for (const post of posts) {
-    writeFile(path.join(outDir, "posts", `${post.slug}.html`), renderArticle(post));
+    writeFile(path.join(outDir, "posts", `${post.slug}.html`), renderArticle(post, posts));
   }
 }
 
-build();
+if (require.main === module) {
+  build();
+}
+
+module.exports = {
+  build,
+  renderMarkdown,
+  readPosts
+};
