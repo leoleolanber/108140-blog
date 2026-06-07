@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://108140.xyz/sitemap.xml
+Sitemap: https://blog.66zhang.cn/sitemap.xml
