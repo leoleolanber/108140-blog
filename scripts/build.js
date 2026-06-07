@@ -8,7 +8,7 @@ const outDir = path.join(root, "_site");
 const contentDir = path.join(root, "content", "posts");
 
 const site = {
-  title: "Zulux`s blog",
+  title: "Zulux's blog",
   subtitle: "信息技术博客",
   url: "https://blog.66zhang.cn",
   description: "分享网络、Linux、云服务、开发工具、安全排障和 AI 应用的技术博客。",
