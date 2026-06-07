@@ -548,14 +548,73 @@ input {
   line-height: 1.28;
 }
 
+.prose h3 {
+  margin: 26px 0 8px;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
 .prose p,
 .prose li {
   color: #3f4642;
 }
 
+.prose ul,
+.prose ol {
+  padding-left: 24px;
+}
+
 .prose a {
   color: var(--teal);
   font-weight: 700;
+}
+
+.prose code {
+  border: 1px solid rgba(22, 134, 111, 0.14);
+  border-radius: 6px;
+  background: rgba(22, 134, 111, 0.08);
+  color: #133e36;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
+  padding: 0.1em 0.34em;
+}
+
+.prose pre {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 253, 248, 0.16);
+  border-radius: 8px;
+  background: #0d1715;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 18px;
+}
+
+.prose pre code {
+  border: 0;
+  background: transparent;
+  color: #d9f4e9;
+  padding: 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 22px 0;
+  overflow: hidden;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid rgba(29, 44, 39, 0.12);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  background: rgba(22, 134, 111, 0.1);
+  color: #173d35;
 }
 
 .prose blockquote {
@@ -564,6 +623,10 @@ input {
   background: var(--paper-strong);
   padding: 16px 18px;
   color: #4b4037;
+}
+
+.prose .MathJax {
+  outline: 0;
 }
 
 .back-link {

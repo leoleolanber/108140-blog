@@ -4,13 +4,43 @@
 
 ## 本地预览
 
-直接打开 `index.html` 即可预览。也可以在目录里启动一个静态服务器：
+先安装依赖并生成站点：
 
 ```powershell
-python -m http.server 4173
+npm install
+npm run build
+```
+
+然后预览 `_site` 目录：
+
+```powershell
+python -m http.server 4173 -d _site
 ```
 
 然后访问 `http://localhost:4173/`。
+
+## 写文章
+
+你只需要在 `content/posts/` 目录写 Markdown 文件。每篇文章顶部放 front matter：
+
+```markdown
+---
+title: "文章标题"
+date: "2026-06-07"
+tags: ["网络", "Linux", "云服务"]
+summary: "文章摘要，会显示在首页卡片和 RSS 中。"
+---
+```
+
+正文直接写 Markdown。LaTeX 支持行内公式 `$E=mc^2$` 和块级公式：
+
+```markdown
+$$
+T = \frac{D}{t}
+$$
+```
+
+可以参考 `content/posts/markdown-latex-example.md`。
 
 ## 发布到 GitHub Pages
 
@@ -34,8 +64,9 @@ blog -> leoleolanber.github.io
 ## 后续编辑
 
 - 首页文章列表在 `index.html`
+- Markdown 文章在 `content/posts/`
+- 生成脚本在 `scripts/build.js`
 - 样式在 `assets/styles.css`
 - 搜索和标签筛选在 `assets/app.js`
-- 文章页在 `posts/`
 - 自定义域名在 `CNAME`
 - 全站背景图目前使用 `assets/site-background.png`。以后要换整站背景图，可以直接替换这个文件，或在 `assets/styles.css` 里修改 `--site-bg-image`。

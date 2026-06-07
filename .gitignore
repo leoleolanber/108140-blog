@@ -1,2 +1,4 @@
 assets/ChatGPT Image*.png
 assets/hero (*).png
+node_modules/
+_site/
