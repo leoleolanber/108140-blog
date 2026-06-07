@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>从 0 到 GitHub Pages 的发布笔记 | 108140.xyz</title>
+    <meta name="description" content="记录个人博客通过 GitHub Pages 和自定义域名上线的核心步骤。" />
+    <link rel="canonical" href="https://108140.xyz/posts/github-pages-notes.html" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html" aria-label="108140.xyz 首页">
+        <span class="brand-mark">108</span>
+        <span class="brand-name">108140.xyz</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        <a href="../index.html#latest">文章</a>
+        <a href="../index.html#notes">笔记</a>
+        <a href="../index.html#archive">归档</a>
+        <a href="../feed.xml">RSS</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article>
+        <header class="article-hero">
+          <img src="../assets/hero.png" alt="夜晚书桌、笔记本电脑和城市灯光" />
+          <div class="article-title">
+            <p class="section-kicker">Deploy</p>
+            <h1>从 0 到 GitHub Pages 的发布笔记</h1>
+            <div class="post-meta">
+              <time datetime="2026-06-07">2026.06.07</time>
+              <span>3 min</span>
+              <span>GitHub / 部署</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="prose">
+          <p>
+            这个站点是纯静态结构：HTML、CSS、JavaScript 和图片。它不依赖数据库，也不需要服务器进程，因此很适合放在 GitHub Pages 上。
+          </p>
+
+          <h2>上线需要三件事</h2>
+          <p>
+            第一，仓库里保留 <strong>CNAME</strong> 文件，内容是 <strong>108140.xyz</strong>。第二，在 GitHub Pages 里选择从 GitHub Actions 发布。第三，把域名 DNS 指向 GitHub Pages。
+          </p>
+
+          <h2>为什么不用复杂框架</h2>
+          <p>
+            个人博客的第一目标是能持续写。静态页面的好处是迁移简单、加载快、几乎不会被依赖升级打断。
+          </p>
+
+          <h2>以后可以加什么</h2>
+          <p>
+            等文章数量变多后，可以再引入静态站生成器，把文章从 HTML 换成 Markdown。现在这个版本先让博客真正上线。
+          </p>
+        </div>
+      </article>
+
+      <a class="back-link" href="../index.html#latest">返回首页</a>
+    </main>
+  </body>
+</html>

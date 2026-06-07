@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>108140.xyz | 个人博客</title>
+    <meta
+      name="description"
+      content="108140.xyz 是一个记录技术、生活、工具和长期思考的个人博客。"
+    />
+    <meta property="og:title" content="108140.xyz | 个人博客" />
+    <meta
+      property="og:description"
+      content="写代码，也写生活。把碎片想法整理成可以长期回看的笔记。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://108140.xyz/" />
+    <meta property="og:image" content="https://108140.xyz/assets/hero.png" />
+    <link rel="canonical" href="https://108140.xyz/" />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%231f3b35'/%3E%3Cpath d='M16 42V22h8v20zm12 0V22h8v20zm12 0V22h8v20z' fill='%23f6ead7'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="108140.xyz 首页">
+        <span class="brand-mark">108</span>
+        <span class="brand-name">108140.xyz</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        <a href="#latest">文章</a>
+        <a href="#notes">笔记</a>
+        <a href="#archive">归档</a>
+        <a href="feed.xml">RSS</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-label="108140.xyz">
+        <img src="assets/hero.png" alt="夜晚书桌、笔记本电脑和城市灯光" />
+        <div class="hero-shade"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Personal Blog</p>
+          <h1>108140.xyz</h1>
+          <p class="hero-copy">
+            写代码，也写生活。把那些一闪而过的想法，整理成可以长期回看的笔记。
+          </p>
+          <div class="hero-actions" aria-label="精选入口">
+            <a class="primary-link" href="#latest">阅读最新文章</a>
+            <a class="secondary-link" href="#about">关于我</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="page-shell">
+        <section id="latest" class="content-column" aria-labelledby="latest-title">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Latest</p>
+              <h2 id="latest-title">最新文章</h2>
+            </div>
+            <label class="search-box">
+              <span>搜索</span>
+              <input id="post-search" type="search" placeholder="关键词、标签、标题" />
+            </label>
+          </div>
+
+          <div class="filter-row" aria-label="文章筛选">
+            <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true">全部</button>
+            <button class="filter-button" type="button" data-filter="技术" aria-pressed="false">技术</button>
+            <button class="filter-button" type="button" data-filter="生活" aria-pressed="false">生活</button>
+            <button class="filter-button" type="button" data-filter="工具" aria-pressed="false">工具</button>
+            <button class="filter-button" type="button" data-filter="写作" aria-pressed="false">写作</button>
+            <button class="filter-button" type="button" data-filter="GitHub" aria-pressed="false">GitHub</button>
+          </div>
+
+          <article class="featured-post post-card" data-tags="技术 GitHub 写作" data-title="把个人网站当作长期实验">
+            <a href="posts/personal-site-as-lab.html" class="post-image">
+              <img src="assets/hero.png" alt="书桌上的电脑和笔记本" />
+            </a>
+            <div class="post-body">
+              <div class="post-meta">
+                <span>置顶</span>
+                <time datetime="2026-06-07">2026.06.07</time>
+                <span>4 min</span>
+              </div>
+              <h3><a href="posts/personal-site-as-lab.html">把个人网站当作长期实验</a></h3>
+              <p>
+                一个博客不只是发布文章的地方，它也可以是长期思考、工具审美和自我整理的公开工作台。
+              </p>
+              <div class="tag-list" aria-label="标签">
+                <span>技术</span>
+                <span>写作</span>
+                <span>个人站</span>
+              </div>
+            </div>
+          </article>
+
+          <div class="post-list">
+            <article class="post-card compact" data-tags="技术 GitHub" data-title="从 0 到 GitHub Pages 的发布笔记">
+              <div class="post-body">
+                <div class="post-meta">
+                  <time datetime="2026-06-07">2026.06.07</time>
+                  <span>3 min</span>
+                </div>
+                <h3><a href="posts/github-pages-notes.html">从 0 到 GitHub Pages 的发布笔记</a></h3>
+                <p>域名、CNAME、静态页面和自动部署，个人博客上线其实可以很轻。</p>
+                <div class="tag-list">
+                  <span>GitHub</span>
+                  <span>部署</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post-card compact" data-tags="写作 生活" data-title="给日常写作留一个稳定入口">
+              <div class="post-body">
+                <div class="post-meta">
+                  <time datetime="2026-06-06">2026.06.06</time>
+                  <span>5 min</span>
+                </div>
+                <h3><a href="posts/writing-system.html">给日常写作留一个稳定入口</a></h3>
+                <p>当想法不再散落在聊天记录和备忘录里，写作会变得更像一种可持续的习惯。</p>
+                <div class="tag-list">
+                  <span>写作</span>
+                  <span>生活</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post-card compact" data-tags="工具 技术" data-title="工具链应该安静地工作">
+              <div class="post-body">
+                <div class="post-meta">
+                  <time datetime="2026-06-05">2026.06.05</time>
+                  <span>4 min</span>
+                </div>
+                <h3><a href="posts/tooling-should-be-quiet.html">工具链应该安静地工作</a></h3>
+                <p>好的工具不需要每天宣告存在，它只是把阻力一点点移开。</p>
+                <div class="tag-list">
+                  <span>工具</span>
+                  <span>效率</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <p id="empty-state" class="empty-state" hidden>没有找到匹配的文章。</p>
+        </section>
+
+        <aside class="sidebar" aria-label="侧栏">
+          <section id="about" class="side-panel">
+            <p class="side-kicker">About</p>
+            <h2>关于 108140</h2>
+            <p>
+              这里可以写你的身份、兴趣和博客方向。现在先放一个安静的版本：记录技术实践，也记录生活里的小发现。
+            </p>
+          </section>
+
+          <section class="side-panel">
+            <p class="side-kicker">Now</p>
+            <h2>最近在做</h2>
+            <ul class="clean-list">
+              <li>整理个人知识库</li>
+              <li>维护这个博客的视觉和文章结构</li>
+              <li>记录一些工具、代码和生活观察</li>
+            </ul>
+          </section>
+
+          <section id="notes" class="side-panel">
+            <p class="side-kicker">Notes</p>
+            <h2>短笔记</h2>
+            <ol class="ranked-list">
+              <li><a href="posts/github-pages-notes.html">给域名写一份部署清单</a></li>
+              <li><a href="posts/writing-system.html">别把灵感只留在输入框里</a></li>
+              <li><a href="posts/tooling-should-be-quiet.html">低摩擦比大而全更重要</a></li>
+            </ol>
+          </section>
+
+          <section class="side-panel">
+            <p class="side-kicker">Tags</p>
+            <h2>标签</h2>
+            <div class="tag-cloud">
+              <a href="#latest" data-tag-link="技术">技术</a>
+              <a href="#latest" data-tag-link="工具">工具</a>
+              <a href="#latest" data-tag-link="写作">写作</a>
+              <a href="#latest" data-tag-link="生活">生活</a>
+              <a href="#latest" data-tag-link="GitHub">GitHub</a>
+            </div>
+          </section>
+
+          <section id="archive" class="side-panel">
+            <p class="side-kicker">Archive</p>
+            <h2>归档</h2>
+            <div class="archive-row">
+              <span>2026 年 6 月</span>
+              <strong>4</strong>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 108140.xyz</p>
+      <a href="https://108140.xyz/">108140.xyz</a>
+    </footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>
