@@ -53,10 +53,11 @@ $$
 
 ## 后续编辑
 
-- 首页文章列表在 `index.html`
 - Markdown 文章在 `content/posts/`
 - 生成脚本在 `scripts/build.js`
 - 样式在 `assets/styles.css`
 - 搜索和标签筛选在 `assets/app.js`
 - 自定义域名在 `CNAME`
 - 全站背景图目前使用 `assets/site-background.png`。以后要换整站背景图，可以直接替换这个文件，或在 `assets/styles.css` 里修改 `--site-bg-image`。
+
+不要手写 HTML。`npm run build` 会把 Markdown 自动生成到 `_site/`，GitHub Pages 也只部署 `_site/`。

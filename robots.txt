@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://blog.66zhang.cn/sitemap.xml

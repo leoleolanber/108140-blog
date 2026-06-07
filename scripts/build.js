@@ -15,6 +15,7 @@ const site = {
   ogDescription: "面向信息技术实践，记录网络、系统、云服务、工具链和 AI 自动化。",
   heroCopy: "面向信息技术实践，记录网络、Linux、云服务、开发工具、AI 自动化和日常运维中的可复用经验。",
   topics: ["Network", "Linux", "Cloud", "Security", "AI"],
+  stack: ["Markdown", "LaTeX", "GitHub Actions", "MathJax"],
   focus: [
     "网络协议、DNS、CDN 与访问质量",
     "Linux、Web 服务和云主机运维",
@@ -238,11 +239,15 @@ function renderHome(posts) {
   const featured = posts.find((post) => post.featured) || posts[0];
   const rest = posts.filter((post) => post !== featured);
   const tags = [...new Set(posts.flatMap((post) => post.tags))];
+  const tagCounts = tags
+    .map((tag) => ({ tag, count: posts.filter((post) => post.tags.includes(tag)).length }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "zh-CN"));
   const archive = posts.reduce((items, post) => {
     const label = monthLabel(post.date);
     items.set(label, (items.get(label) || 0) + 1);
     return items;
   }, new Map());
+  const latestPost = posts[0];
 
   return `${pageHead({
     title: `${site.title} | ${site.subtitle}`,
@@ -257,21 +262,55 @@ function renderHome(posts) {
         <img src="assets/hero.png" alt="信息技术博客背景图" />
         <div class="hero-shade"></div>
         <div class="hero-content">
-          <p class="eyebrow">Information Technology</p>
-          <h1>${site.title}</h1>
-          <p class="hero-copy">${site.heroCopy}</p>
-          <div class="hero-topics" aria-label="内容方向">
-            ${site.topics.map((topic) => `<span>${topic}</span>`).join("\n            ")}
+          <div class="hero-main">
+            <p class="eyebrow">Information Technology</p>
+            <h1>${site.title}</h1>
+            <p class="hero-copy">${site.heroCopy}</p>
+            <div class="hero-topics" aria-label="内容方向">
+              ${site.topics.map((topic) => `<span>${topic}</span>`).join("\n              ")}
+            </div>
+            <div class="hero-actions" aria-label="精选入口">
+              <a class="primary-link" href="#latest">阅读技术文章</a>
+              <a class="secondary-link" href="#notes">浏览专题</a>
+            </div>
           </div>
-          <div class="hero-actions" aria-label="精选入口">
-            <a class="primary-link" href="#latest">阅读技术文章</a>
-            <a class="secondary-link" href="#notes">浏览专题</a>
+          <div class="hero-console" aria-label="站点概览">
+            <div class="console-top">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="console-line"><span class="console-key">site</span><span>${site.title}</span></div>
+            <div class="console-line"><span class="console-key">posts</span><span>${posts.length}</span></div>
+            <div class="console-line"><span class="console-key">latest</span><span>${escapeHtml(latestPost.title)}</span></div>
+            <div class="console-line"><span class="console-key">write</span><span>Markdown + LaTeX</span></div>
+            <div class="console-stack">
+              ${site.stack.map((item) => `<span>${escapeHtml(item)}</span>`).join("\n              ")}
+            </div>
           </div>
         </div>
       </section>
 
       <div class="page-shell">
         <section id="latest" class="content-column" aria-labelledby="latest-title">
+          <div class="signal-bar" aria-label="站点摘要">
+            <div class="signal-item">
+              <span class="signal-label">Articles</span>
+              <strong>${posts.length}</strong>
+              <span>技术文章</span>
+            </div>
+            <div class="signal-item">
+              <span class="signal-label">Topics</span>
+              <strong>${tags.length}</strong>
+              <span>可筛选标签</span>
+            </div>
+            <div class="signal-item">
+              <span class="signal-label">Latest</span>
+              <strong>${latestPost.dateText}</strong>
+              <span>${escapeHtml(latestPost.title)}</span>
+            </div>
+          </div>
+
           <div class="section-head">
             <div>
               <p class="section-kicker">Latest</p>
@@ -312,6 +351,17 @@ function renderHome(posts) {
             </ul>
           </section>
 
+          <section class="side-panel command-panel">
+            <p class="side-kicker">Workflow</p>
+            <h2>写作流程</h2>
+            <div class="command-list" aria-label="Markdown 写作流程">
+              <span>content/posts/*.md</span>
+              <span>npm run build</span>
+              <span>GitHub Actions</span>
+              <span>blog.66zhang.cn</span>
+            </div>
+          </section>
+
           <section id="notes" class="side-panel">
             <p class="side-kicker">Topics</p>
             <h2>专题索引</h2>
@@ -323,8 +373,8 @@ function renderHome(posts) {
           <section class="side-panel">
             <p class="side-kicker">Tags</p>
             <h2>标签</h2>
-            <div class="tag-cloud">
-              ${tags.map((tag) => `<a href="#latest" data-tag-link="${escapeHtml(tag)}">${escapeHtml(tag)}</a>`).join("\n              ")}
+            <div class="topic-matrix">
+              ${tagCounts.map(({ tag, count }) => `<a href="#latest" data-tag-link="${escapeHtml(tag)}"><span>${escapeHtml(tag)}</span><strong>${count}</strong></a>`).join("\n              ")}
             </div>
           </section>
 
