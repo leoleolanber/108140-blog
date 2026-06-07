@@ -1,6 +1,6 @@
 # blog.66zhang.cn Blog
 
-这是一个为 `blog.66zhang.cn` 准备的 GitHub Pages 静态博客。页面结构参考内容型博客的信息密度：首屏、文章流、搜索、标签筛选、侧栏、归档、RSS、站点地图和 404 页面。
+这是一个为 `blog.66zhang.cn` 准备的信息技术博客。页面结构面向技术内容分享：首屏、文章流、搜索、标签筛选、专题侧栏、归档、RSS、站点地图和 404 页面。
 
 ## 本地预览
 
@@ -38,3 +38,4 @@ blog -> leoleolanber.github.io
 - 搜索和标签筛选在 `assets/app.js`
 - 文章页在 `posts/`
 - 自定义域名在 `CNAME`
+- 全站背景图目前使用 `assets/site-background.png`。以后要换整站背景图，可以直接替换这个文件，或在 `assets/styles.css` 里修改 `--site-bg-image`。

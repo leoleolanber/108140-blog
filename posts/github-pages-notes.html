@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>从 0 到 GitHub Pages 的发布笔记 | blog.66zhang.cn</title>
-    <meta name="description" content="记录个人博客通过 GitHub Pages 和自定义域名上线的核心步骤。" />
+    <title>用 GitHub Pages 托管技术博客 | blog.66zhang.cn</title>
+    <meta name="description" content="用 GitHub Pages、Actions 和自定义域名托管一个低成本技术博客。" />
     <link rel="canonical" href="https://blog.66zhang.cn/posts/github-pages-notes.html" />
     <link rel="stylesheet" href="../assets/styles.css" />
   </head>
@@ -16,7 +16,7 @@
       </a>
       <nav class="site-nav" aria-label="主导航">
         <a href="../index.html#latest">文章</a>
-        <a href="../index.html#notes">笔记</a>
+        <a href="../index.html#notes">专题</a>
         <a href="../index.html#archive">归档</a>
         <a href="../feed.xml">RSS</a>
       </nav>
@@ -28,18 +28,18 @@
           <img src="../assets/hero.png" alt="夜晚书桌、笔记本电脑和城市灯光" />
           <div class="article-title">
             <p class="section-kicker">Deploy</p>
-            <h1>从 0 到 GitHub Pages 的发布笔记</h1>
+            <h1>用 GitHub Pages 托管技术博客</h1>
             <div class="post-meta">
               <time datetime="2026-06-07">2026.06.07</time>
               <span>3 min</span>
-              <span>GitHub / 部署</span>
+              <span>GitHub / 云服务 / 部署</span>
             </div>
           </div>
         </header>
 
         <div class="prose">
           <p>
-            这个站点是纯静态结构：HTML、CSS、JavaScript 和图片。它不依赖数据库，也不需要服务器进程，因此很适合放在 GitHub Pages 上。
+            对技术博客来说，静态站点是一个很稳的起点。HTML、CSS、JavaScript 和图片就能完成发布，不需要维护数据库，也不需要长期运行服务器进程。
           </p>
 
           <h2>上线需要三件事</h2>
@@ -47,14 +47,14 @@
             第一，仓库里保留 <strong>CNAME</strong> 文件，内容是 <strong>blog.66zhang.cn</strong>。第二，在 GitHub Pages 里选择从 GitHub Actions 发布。第三，在域名 DNS 里把 <strong>blog</strong> 子域名指向 GitHub Pages。
           </p>
 
-          <h2>为什么不用复杂框架</h2>
+          <h2>为什么先保持静态</h2>
           <p>
-            个人博客的第一目标是能持续写。静态页面的好处是迁移简单、加载快、几乎不会被依赖升级打断。
+            技术内容最重要的是可读、可访问、可长期维护。静态页面迁移简单、加载快、依赖少，适合先把文章体系跑起来。
           </p>
 
-          <h2>以后可以加什么</h2>
+          <h2>后续可以升级什么</h2>
           <p>
-            等文章数量变多后，可以再引入静态站生成器，把文章从 HTML 换成 Markdown。现在这个版本先让博客真正上线。
+            文章数量变多后，可以引入静态站生成器，把文章从 HTML 换成 Markdown，再加代码高亮、分类页、搜索索引和自动化发布脚本。
           </p>
         </div>
       </article>
