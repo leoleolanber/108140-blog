@@ -1,0 +1,20 @@
+<%
+const tagPosts = page.posts ? page.posts.toArray() : [];
+%>
+<main class="listing-page">
+  <section class="listing-head">
+    <p class="section-kicker">Tag</p>
+    <h1><%= page.tag || page.title || "标签" %></h1>
+    <p>这个标签下共有 <%= tagPosts.length %> 篇文章。</p>
+  </section>
+
+  <section class="archive-list">
+    <% tagPosts.forEach(function(post) { %>
+      <article class="archive-card">
+        <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, "YYYY.MM.DD") %></time>
+        <h2><a href="<%- url_for(post.path) %>"><%= post.title %></a></h2>
+        <p><%= post.summary || strip_html(post.excerpt || post.content || "").replace(/\s+/g, " ").trim().slice(0, 120) %></p>
+      </article>
+    <% }) %>
+  </section>
+</main>

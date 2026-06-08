@@ -1,0 +1,20 @@
+<%
+const archivePosts = page.posts ? page.posts.toArray() : site.posts.sort("date", -1).toArray();
+%>
+<main class="listing-page">
+  <section class="listing-head">
+    <p class="section-kicker">Archive</p>
+    <h1><%= page.archive ? "文章归档" : (page.title || "文章归档") %></h1>
+    <p>按时间浏览所有技术文章。</p>
+  </section>
+
+  <section class="archive-list">
+    <% archivePosts.forEach(function(post) { %>
+      <article class="archive-card">
+        <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, "YYYY.MM.DD") %></time>
+        <h2><a href="<%- url_for(post.path) %>"><%= post.title %></a></h2>
+        <p><%= post.summary || strip_html(post.excerpt || post.content || "").replace(/\s+/g, " ").trim().slice(0, 120) %></p>
+      </article>
+    <% }) %>
+  </section>
+</main>

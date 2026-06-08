@@ -1,4 +1,4 @@
-name: Deploy static blog
+name: Deploy Hexo blog
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: "_site"
+          path: "public"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

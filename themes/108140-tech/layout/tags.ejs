@@ -1,0 +1,21 @@
+<%
+const tagItems = site.tags ? site.tags.toArray().sort(function(a, b) {
+  return b.length - a.length || a.name.localeCompare(b.name, "zh-CN");
+}) : [];
+%>
+<main class="listing-page">
+  <section class="listing-head">
+    <p class="section-kicker">Tags</p>
+    <h1>标签</h1>
+    <p>按主题快速进入文章。</p>
+  </section>
+
+  <section class="tag-index">
+    <% tagItems.forEach(function(tag) { %>
+      <a href="<%- url_for(tag.path) %>">
+        <span><%= tag.name %></span>
+        <strong><%= tag.length %></strong>
+      </a>
+    <% }) %>
+  </section>
+</main>

@@ -1,34 +1,47 @@
-# blog.66zhang.cn Blog
+# blog.66zhang.cn Hexo Blog
 
-这是一个为 `blog.66zhang.cn` 准备的信息技术博客。它不是手写 HTML 页面，而是一个轻量静态博客系统：Markdown 文章放在 `content/posts/`，构建脚本自动生成 HTML、RSS、站点地图、搜索索引、文章目录、标签、专题和归档。
+这是部署到 `blog.66zhang.cn` 的 Hexo 技术博客。文章使用 Markdown + LaTeX，公式由 KaTeX 渲染，主题在 `themes/108140-tech/`，部署使用 GitHub Actions + GitHub Pages。
 
-## 本地预览
+## 本地写作
 
-先安装依赖并生成站点：
+安装依赖：
 
 ```powershell
 npm install
-npm run build
 ```
 
-然后预览 `_site` 目录：
+启动本地预览：
 
 ```powershell
-python -m http.server 4173 -d _site
+npm run write
 ```
 
-然后访问 `http://localhost:4173/`。
+然后打开：
+
+```text
+http://localhost:4310/
+```
 
 ## 写文章
 
-你只需要在 `content/posts/` 目录写 Markdown 文件。每篇文章顶部放 front matter：
+文章放在 `source/_posts/`。新增一篇文章可以直接新建 Markdown 文件，也可以用 Hexo 命令：
+
+```powershell
+npx hexo new post "文章标题"
+```
+
+文章 front matter 示例：
 
 ```markdown
 ---
-title: "文章标题"
-date: "2026-06-07"
-tags: ["网络", "Linux", "云服务"]
-summary: "文章摘要，会显示在首页卡片和 RSS 中。"
+title: 文章标题
+date: 2026-06-08
+tags:
+  - Linux
+  - 网络
+summary: 首页和 RSS 里显示的摘要。
+featured: false
+image: assets/hero.png
 ---
 ```
 
@@ -40,45 +53,31 @@ T = \frac{D}{t}
 $$
 ```
 
-可以参考 `content/posts/markdown-latex-example.md`。
-
-## 写作后台
-
-推荐用本地写作后台来写文章：
+## 构建
 
 ```powershell
-npm install
-npm run write
+npm run clean
+npm run build
 ```
 
-然后打开：
+Hexo 会生成 `public/`，GitHub Actions 会把 `public/` 部署到 GitHub Pages。
+
+## 部署
+
+推送到 `main` 分支后，仓库里的 `Deploy Hexo blog` 工作流会自动构建和发布。
+
+域名配置保持：
 
 ```text
-http://localhost:4310/admin/
+blog.66zhang.cn CNAME leoleolanber.github.io
 ```
 
-在页面里写 Markdown + LaTeX。点“保存”会写入 `content/posts/*.md`；点“生成 HTML”会生成 `_site/`；点“发布到 GitHub”会自动保存、生成、提交并推送，GitHub Pages 随后自动部署。
+`source/CNAME` 已经写入 `blog.66zhang.cn`，Hexo 构建时会复制到 `public/CNAME`。
 
-本地后台地址只在你的电脑上运行，不会作为公开页面部署到 GitHub Pages。
+## 目录
 
-## 发布到 GitHub Pages
-
-1. 使用当前仓库，或新建一个仓库。
-2. 把本目录推到仓库的 `main` 分支。
-3. 在仓库的 Settings -> Pages 里选择 GitHub Actions 作为发布方式。
-4. 在 Settings -> Pages -> Custom domain 中填写 `blog.66zhang.cn` 并保存。
-5. 等待 `Deploy static blog` 工作流完成。
-6. GitHub Actions 发布主要依赖 Pages 设置里的 Custom domain。仓库根目录里的 `CNAME` 文件已保留，方便以后改成分支发布或同步记录。
-
-## 后续编辑
-
-- Markdown 文章在 `content/posts/`
-- 本地写作后台在 `admin/`
-- 生成脚本在 `scripts/build.js`
-- 写作后台服务在 `scripts/editor-server.js`
-- 样式在 `assets/styles.css`
-- 搜索和标签筛选在 `assets/app.js`
-- 自定义域名在 `CNAME`
-- 全站背景图目前使用 `assets/site-background.png`。以后要换整站背景图，可以直接替换这个文件，或在 `assets/styles.css` 里修改 `--site-bg-image`。
-
-不要手写 HTML。`npm run build` 会把 Markdown 自动生成到 `_site/`，GitHub Pages 也只部署 `_site/`。
+- `_config.yml`: Hexo 站点配置
+- `source/_posts/`: Markdown 文章
+- `source/assets/`: 背景图和站点图片
+- `themes/108140-tech/`: 自定义 Hexo 主题
+- `.github/workflows/pages.yml`: GitHub Pages 自动部署

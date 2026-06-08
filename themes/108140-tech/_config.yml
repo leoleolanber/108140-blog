@@ -1,0 +1,9 @@
+menu:
+  文章: /
+  归档: /archives/
+  标签: /tags/
+  RSS: /atom.xml
+
+hero_image: /assets/hero.png
+background_image: /assets/site-background.png
+github: https://github.com/leoleolanber/108140-blog

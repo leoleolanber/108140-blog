@@ -3,12 +3,28 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
+  "hexo": {
+    "version": "8.1.2"
+  },
   "scripts": {
-    "build": "node scripts/build.js",
-    "write": "node scripts/editor-server.js"
+    "clean": "hexo clean",
+    "build": "hexo generate",
+    "server": "hexo server -p 4000",
+    "write": "hexo server -p 4310"
   },
   "dependencies": {
-    "gray-matter": "^4.0.3",
-    "markdown-it": "^14.1.0"
+    "@renbaoshuo/markdown-it-katex": "^2.0.2",
+    "hexo": "^8.1.2",
+    "hexo-cli": "^4.3.2",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-feed": "^4.0.0",
+    "hexo-generator-index": "^4.0.0",
+    "hexo-generator-sitemap": "^3.0.1",
+    "hexo-generator-tag": "^2.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-markdown-it": "^7.1.1",
+    "hexo-server": "^3.0.0",
+    "katex": "^0.17.0"
   }
 }

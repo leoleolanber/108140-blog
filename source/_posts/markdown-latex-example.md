@@ -2,7 +2,7 @@
 title: "Markdown + LaTeX 写作示例"
 date: "2026-06-04"
 tags: ["Markdown", "LaTeX", "文档"]
-summary: "以后写文章只需要编辑 Markdown 文件；行内公式和块级公式会由 MathJax 自动渲染。"
+summary: "以后写文章只需要编辑 Markdown 文件；行内公式和块级公式会由 KaTeX 自动渲染。"
 readingTime: "3 min"
 image: "assets/hero.png"
 imageAlt: "信息技术博客背景图"

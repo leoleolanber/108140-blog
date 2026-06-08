@@ -1,0 +1,79 @@
+<%
+const heroImage = page.image || theme.hero_image || "/assets/hero.png";
+const normalizedImage = /^https?:\/\//.test(heroImage) || heroImage.startsWith("/") ? heroImage : `/${heroImage}`;
+const pageTags = page.tags ? page.tags.toArray().map(function(tag) { return tag.name; }) : [];
+const related = site.posts.sort("date", -1).toArray().filter(function(post) {
+  if (post._id === page._id) return false;
+  const tags = post.tags ? post.tags.toArray().map(function(tag) { return tag.name; }) : [];
+  return tags.some(function(tag) { return pageTags.includes(tag); });
+}).slice(0, 4);
+let tocHtml = "";
+try {
+  tocHtml = toc(page.content, { list_number: false, max_depth: 3 });
+} catch (error) {
+  tocHtml = "";
+}
+%>
+
+<main class="article-page">
+  <header class="article-hero">
+    <img src="<%- url_for(normalizedImage) %>" alt="<%= page.imageAlt || page.title %>">
+    <div class="article-hero-shade"></div>
+    <div class="article-title">
+      <p class="section-kicker"><%= pageTags.slice(0, 3).join(" / ") || "Post" %></p>
+      <h1><%= page.title %></h1>
+      <div class="post-meta">
+        <time datetime="<%= date_xml(page.date) %>"><%= date(page.date, "YYYY.MM.DD") %></time>
+        <% if (page.readingTime) { %><span><%= page.readingTime %></span><% } %>
+        <% if (pageTags.length) { %><span><%= pageTags.join(" / ") %></span><% } %>
+      </div>
+    </div>
+  </header>
+
+  <div class="article-layout">
+    <article class="article-body prose">
+      <%- page.content %>
+    </article>
+
+    <aside class="article-aside" aria-label="文章信息">
+      <section class="side-panel toc-panel">
+        <p class="side-kicker">Contents</p>
+        <h2>文章目录</h2>
+        <% if (tocHtml) { %>
+          <div class="toc-list"><%- tocHtml %></div>
+        <% } else { %>
+          <p class="toc-empty">这篇文章没有二级标题。</p>
+        <% } %>
+      </section>
+
+      <% if (pageTags.length) { %>
+        <section class="side-panel">
+          <p class="side-kicker">Tags</p>
+          <h2>相关标签</h2>
+          <div class="tag-cloud small">
+            <% pageTags.forEach(function(tag) { %>
+              <a href="<%- url_for("/") %>#latest"><span><%= tag %></span></a>
+            <% }) %>
+          </div>
+        </section>
+      <% } %>
+
+      <% if (related.length) { %>
+        <section class="side-panel">
+          <p class="side-kicker">Related</p>
+          <h2>相关笔记</h2>
+          <ol class="related-list">
+            <% related.forEach(function(post) { %>
+              <li><a href="<%- url_for(post.path) %>"><%= post.title %></a></li>
+            <% }) %>
+          </ol>
+        </section>
+      <% } %>
+    </aside>
+  </div>
+
+  <nav class="article-nav" aria-label="文章导航">
+    <a href="<%- url_for("/") %>#latest">返回文章列表</a>
+    <a href="<%- url_for("/atom.xml") %>">订阅 RSS</a>
+  </nav>
+</main>
