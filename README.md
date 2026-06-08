@@ -1,6 +1,6 @@
 # blog.66zhang.cn Hexo Blog
 
-这是部署到 `blog.66zhang.cn` 的 Hexo 技术博客。文章使用 Markdown + LaTeX，公式由 KaTeX 渲染，主题在 `themes/108140-tech/`，部署使用 GitHub Actions + GitHub Pages。
+这是部署到 `blog.66zhang.cn` 的 Hexo 技术博客。当前使用 Hexo 官方默认主题 `landscape`，文章使用 Markdown + LaTeX，公式由 KaTeX 渲染，部署使用 GitHub Actions + GitHub Pages。
 
 ## 本地写作
 
@@ -79,5 +79,5 @@ blog.66zhang.cn CNAME leoleolanber.github.io
 - `_config.yml`: Hexo 站点配置
 - `source/_posts/`: Markdown 文章
 - `source/assets/`: 背景图和站点图片
-- `themes/108140-tech/`: 自定义 Hexo 主题
+- `hexo-theme-landscape`: Hexo 官方默认主题
 - `.github/workflows/pages.yml`: GitHub Pages 自动部署

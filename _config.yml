@@ -43,7 +43,7 @@ highlight:
   wrap: true
   hljs: false
 
-theme: 108140-tech
+theme: landscape
 
 index_generator:
   path: ""
